@@ -8,7 +8,9 @@ To use, you simply need `Docker`, `Docker-Compose`. It works best if can forward
 
 ## Services
 
-- [ ] Ingress Service (træfik)
+Each service has a short description in their directory. Below is a list of all services, existing here now, and to exist here in the near future.
+
+- [X] Ingress Service (træfik)
 - [ ] Container Manager (portainer)
 - [ ] Blogging Platform (ghost - works well with Ulysses Note Editor)
 - [ ] Notification Platform (gotify)
