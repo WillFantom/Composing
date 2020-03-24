@@ -12,7 +12,7 @@ Each service has a short description in their directory. Below is a list of all 
 
 - [X] Ingress Service (træfik)
 - [ ] Container Manager (portainer)
-- [ ] Blogging Platform (ghost - works well with Ulysses Note Editor)
+- [X] Blogging Platform (ghost - works well with Ulysses Note Editor)
 - [ ] Notification Platform (gotify)
 - [ ] Torrent Downloader (transmission)
 - [ ] Usenet Downloader (sabnzbd)
