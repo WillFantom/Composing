@@ -1,0 +1,119 @@
+version: "3.7"
+
+services:
+
+  traefik:
+    container_name: traefik
+    image: traefik:latest
+    restart: always
+    networks:
+      - default
+      - traefik-network
+    ports:
+      - 8080:8080
+      - 443:443
+      - 80:80
+    volumes:
+      - ${CERT_DIR}:/letsencrypt
+      - ${RULES_DIR}:/rules
+      - ${LOGS_DIR}:/logs
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    environment:
+      - CF_API_EMAIL=${CF_API_EMAIL}
+      - CF_API_KEY=${CF_API_KEY}
+    command:
+      - "--api=true"
+      - "--api.dashboard=true"
+      - "--accesslog=false"
+      - "--accesslog.filepath=/logs/access.log"
+      - "--accesslog.format=json"
+      - "--accesslog.filters.statuscodes=300-599"
+      - "--accesslog.filters.retryattempts"
+      - "--accesslog.filters.minduration=100ms"
+      - "--log.level=ERROR"
+      - "--providers.docker=true"
+      - "--providers.docker.watch=true"
+      - "--providers.docker.exposedbydefault=false"
+      - "--providers.docker.network=traefik-network"
+      - "--providers.file.directory=/rules"
+      - "--providers.file.watch=true"
+      - "--entrypoints.web.address=:80"
+      - "--entrypoints.websecure.address=:443"
+      - "--certificatesresolvers.cfdns.acme.dnschallenge=true"
+      - "--certificatesresolvers.cfdns.acme.dnschallenge.provider=cloudflare"
+      - "--certificatesresolvers.cfdns.acme.email=${CF_API_EMAIL}"
+      - "--certificatesresolvers.cfdns.acme.storage=/letsencrypt/acme.json"
+      - "--metrics.prometheus.buckets=0.1,0.3,1.2,5.0"
+      - "--metrics.prometheus.entrypoint=traefik"
+    labels:
+      - traefik.enable=true
+
+      ## Middlewares
+      ## - these can be reused on any træfik enabled services
+      # Redirect to HTTPS
+      - traefik.http.middlewares.tls-redirect.redirectscheme.scheme=https
+      # Basic Auth (with details from ingress/.env)
+      - traefik.http.middlewares.bauth.basicauth.users=${USERNAME}:${HASHEDPASS}
+      # Forward Auth
+      - traefik.http.middlewares.sso.forwardAuth.address=http://traefik-sso-fw:4181
+      - traefik.http.middlewares.sso.forwardauth.trustForwardHeader=true
+      - traefik.http.middlewares.sso.forwardAuth.authResponseHeaders=X-Forwarded-User
+      # Security Headers
+      - traefik.http.middlewares.hsts.headers.sslForceHost=true
+      - traefik.http.middlewares.hsts.headers.stsSeconds=315360000
+      - traefik.http.middlewares.hsts.headers.stsIncludeSubdomains=true
+      - traefik.http.middlewares.hsts.headers.stsPreload=true
+      - traefik.http.middlewares.xss.headers.browserXssFilter=true
+      - traefik.http.middlewares.frameDeny.headers.frameDeny=true
+      - traefik.http.middlewares.nosniff.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.sslr.headers.sslredirect=true
+      # Internal Only (Requires Træfik to be running with network mode host)
+      # - traefik.http.middlewares.inner.ipwhitelist.sourcerange=${ALLOWED_SUBNETS}
+      # Rate Limit
+      - traefik.http.middlewares.ratelimit.ratelimit.average=1000
+      - traefik.http.middlewares.ratelimit.ratelimit.burst=100
+
+      # Middleware Chains
+      - traefik.http.middlewares.basic-http.chain.middlewares=tls-redirect,sslr
+      - traefik.http.middlewares.basic.chain.middlewares=ratelimit,hsts,xss,sslr,nosniff,frameDeny
+      - traefik.http.middlewares.auth.chain.middlewares=sso,bauth
+
+      # Træfik Dashboard Labels
+      - traefik.http.routers.traefik.entrypoints=web
+      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik.middlewares=basic-http
+      - traefik.http.routers.traefik-sec.entrypoints=websecure
+      - traefik.http.routers.traefik-sec.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik-sec.service=api@internal
+      - traefik.http.routers.traefik-sec.middlewares=auth,basic
+      - traefik.http.routers.traefik-sec.tls=true
+      - traefik.http.routers.traefik-sec.tls.certresolver=cfdns
+
+  traefik-sso-fw:
+    image: thomseddon/traefik-forward-auth
+    container_name: traefik-sso-fw
+    environment:
+      - PROVIDERS_GOOGLE_CLIENT_ID=${AUTH_ID}
+      - PROVIDERS_GOOGLE_CLIENT_SECRET=${AUTH_SECRET}
+      - SECRET=${RANDOM_SECRET}
+      - AUTH_HOST=auth.${DOMAIN}
+      - INSECURE_COOKIE=false
+      - COOKIE_DOMAIN=${DOMAIN}
+      - LOG_LEVEL=debug
+      - WHITELIST=${WHITELISTED_EMAILS}
+    networks:
+      - traefik-network
+    labels:
+      - traefik.enable=true
+      - traefik.http.services.traefik-sso-fw.loadBalancer.server.port=4181
+      - traefik.http.routers.traefik-sso-fw.entryPoints=websecure
+      - traefik.http.routers.traefik-sso-fw.rule=host(`auth.${DOMAIN}`)
+      - traefik.http.routers.traefik-sso-fw.middlewares=basic,sso
+      - traefik.http.routers.traefik-sso-fw.tls=true
+      - traefik.http.routers.traefik-sso-fw.tls.certResolver=cfdns
+      
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
