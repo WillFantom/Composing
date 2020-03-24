@@ -31,3 +31,20 @@ Each service has a short description in their directory. Below is a list of all 
 - [ ] Dashboard (coming soon....!)
 - [ ] Self Hosted Git (gitea)
 - [ ] Self Hosted Cloud (nextcloud)
+
+## Usage
+
+To run any of these services, I suggest the use of Træfik! To set this up, navigate to the `traefik` directory and run:
+
+```bash
+docker network create traefik-network
+docker-compose up -d
+```
+
+(Remember to create the `.env` file for the træfik system first!!)
+
+Beyond this, each directory contains a docker compose file and and an example `.env` file. Modify the env, using values appropriate to your setup, then simply run the following in the directory:
+
+```bash
+docker-compose up -d
+```
