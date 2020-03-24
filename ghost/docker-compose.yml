@@ -11,7 +11,7 @@ services:
       - traefik-network
     environment:
       - url=https://blog.${DOMAIN}
-      - database__client
+      - database__client=mysql
       - database__connection__host=ghost-db
       - database__connection__user=root
       - database__connection__password=${GHOST_DB_PASSWORD}
@@ -19,6 +19,11 @@ services:
       - mail__transport=SMTP
       - mail__options__host=ghost-mail
       - mail__options__port=25
+    volumes:
+      - ${GHOST_APPS}:/var/lib/ghost/content/apps
+      - ${GHOST_DATA}:/var/lib/ghost/content/data
+      - ${GHOST_IMGS}:/var/lib/ghost/content/images
+      - ${GHOST_THEMES}:/var/lib/ghost/content/themes
     labels:
       - traefik.enable=true
       - traefik.http.routers.ghost.entrypoints=web
@@ -52,4 +57,3 @@ networks:
   traefik-network:
     external: true
   default:
-    driver: bridge
