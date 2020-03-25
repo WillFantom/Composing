@@ -1,0 +1,91 @@
+version: '3.7'
+
+services:
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    user: root
+    networks:
+      - traefik-network
+    volumes:
+      - ${GRAFANA_DATA_DIR}:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.grafana.entrypoints=web
+      - traefik.http.routers.grafana.rule=Host(`monitor.${DOMAIN}`)
+      - traefik.http.routers.grafana.middlewares=basic-http
+      - traefik.http.routers.grafana-sec.entrypoints=websecure
+      - traefik.http.routers.grafana-sec.rule=Host(`monitor.${DOMAIN}`)
+      - traefik.http.services.grafana-sec.loadBalancer.server.port=3000
+      - traefik.http.routers.grafana-sec.middlewares=basic
+      - traefik.http.routers.grafana-sec.tls=true
+      - traefik.http.routers.grafana-sec.tls.certresolver=cfdns
+
+  prometheus:
+    container_name: prometheus
+    image: prom/prometheus:latest
+    restart: unless-stopped
+    user: root
+    networks:
+      - default
+      - traefik-network
+    volumes:
+      - ${PROMETHEUS_CONFIG_DIR}:/etc/prometheus/
+      - ${PROMETHEUS_DATA_DIR}:/prometheus
+    command:
+      - '--config.file=/etc/prometheus/prometheus.yml'
+      - '--storage.tsdb.path=/prometheus'
+      - '--web.console.libraries=/usr/share/prometheus/console_libraries'
+      - '--web.console.templates=/usr/share/prometheus/consoles'
+    labels:
+      - traefik.enable=false
+
+  node-exporter:
+    container_name: node-exporter
+    image: prom/node-exporter
+    restart: unless-stopped
+    networks:
+      - default
+    volumes:
+      - /proc:/host/proc:ro
+      - /sys:/host/sys:ro
+      - /:/rootfs:ro
+    command: 
+      - '--path.procfs=/host/proc' 
+      - '--path.sysfs=/host/sys'
+      - --collector.filesystem.ignored-mount-points
+      - "^/(sys|proc|dev|host|etc|rootfs/var/lib/docker/containers|rootfs/var/lib/docker/overlay2|rootfs/run/docker/netns|rootfs/var/lib/docker/aufs)($$|/)"
+
+  alertmanager:
+    container_name: prometheus-alert-manager
+    image: prom/alertmanager
+    restart: unless-stopped
+    networks:
+      - default
+    volumes:
+      - ${ALERT_MANAGER_CONFIG}:/etc/alertmanager/
+    command:
+      - '--config.file=/etc/alertmanager/config.yml'
+      - '--storage.path=/alertmanager'
+
+  cadvisor:
+    container_name: cadvisor
+    image: google/cadvisor
+    restart: unless-stopped
+    networks:
+      - default
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys:ro
+      - /var/lib/docker/:/var/lib/docker:ro
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
