@@ -17,3 +17,4 @@ To run this, you must create a `.env` file in this directory. Below are the requ
 - GHOST_DATA - Directory for your ghost data
 - GHOST_IMGS - Directory for your ghost images
 - GHOST_THEMES - Directory for your ghost themes
+- GHOST_DB_DATA - Directory for your ghost database

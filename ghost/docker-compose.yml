@@ -49,6 +49,8 @@ services:
     restart: unless-stopped
     networks:
       - default
+    volumes:
+      - ${GHOST_DB_DATA}:/var/lib/mysql
     environment:
       - MYSQL_ROOT_PASSWORD=${GHOST_DB_PASSWORD}
       - MYSQL_DATABASE=ghost
