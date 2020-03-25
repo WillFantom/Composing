@@ -30,7 +30,7 @@ Each service has a short description in their directory. Below is a list of all 
 - [X] Time Series DB (prometheus) - [here](monitoring/)
 - [X] Stats Graph Tool (grafana) - [here](monitoring/)
 - [ ] Dashboard (coming soon....!)
-- [ ] Self Hosted Git (gitea)
+- [X] Self Hosted Git (gitea) - [here](gitea/)
 - [ ] Self Hosted Cloud (nextcloud)
 
 ## Usage
