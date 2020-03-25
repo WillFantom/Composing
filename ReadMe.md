@@ -11,7 +11,7 @@ To use, you simply need `Docker`, `Docker-Compose`. It works best if can forward
 Each service has a short description in their directory. Below is a list of all services, existing here now, and to exist here in the near future.
 
 - [X] Ingress Service (træfik) - [here](traefik/)
-- [X] Container Manager (portainer)
+- [X] Container Manager (portainer) - [here](portainer/)
 - [X] Blogging Platform (ghost - works well with Ulysses Note Editor) - [here](ghost/)
 - [ ] Notification Platform (gotify)
 - [ ] Torrent Downloader (transmission)
