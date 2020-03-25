@@ -14,6 +14,7 @@ Each service has a short description in their directory. Below is a list of all 
 - [X] Container Manager (portainer) - [here](portainer/)
 - [X] Blogging Platform (ghost - works well with Ulysses Note Editor) - [here](ghost/)
 - [X] Notification Platform (gotify) - [here](gotify/)
+- [X] Time/Wage Manager (titra) - [here](titra/)
 - [ ] Torrent Downloader (transmission)
 - [ ] Usenet Downloader (sabnzbd)
 - [ ] TV Show Download Automator (sonarr)

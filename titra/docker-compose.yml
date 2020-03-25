@@ -1,0 +1,43 @@
+version: "3.7"
+
+services:
+
+  titra:
+    container_name: titra
+    image: kromit/titra
+    restart: unless-stopped
+    depends_on:
+      - titra-db
+    networks:
+      - traefik-network
+      - default
+    environment:
+      - ROOT_URL=https://timetrack.${DOMAIN}
+      - MONGO_URL=mongodb://titra-db/titra
+      - PORT=3000
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.titra.entrypoints=web
+      - traefik.http.routers.titra.rule=Host(`timetrack.${DOMAIN}`)
+      - traefik.http.routers.titra.middlewares=basic-http
+      - traefik.http.routers.titra-sec.entrypoints=websecure
+      - traefik.http.routers.titra-sec.rule=Host(`timetrack.${DOMAIN}`)
+      - traefik.http.services.titra-sec.loadBalancer.server.port=3000
+      - traefik.http.routers.titra-sec.middlewares=basic
+      - traefik.http.routers.titra-sec.tls=true
+      - traefik.http.routers.titra-sec.tls.certresolver=cfdns
+
+  titra-db:
+    container_name: titra-db
+    image: mongo:4.0
+    restart: unless-stopped
+    networks:
+      - default
+    volumes:
+      - ${TITRA_DB_DATA}:/data/db
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
