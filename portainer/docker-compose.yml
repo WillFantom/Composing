@@ -1,0 +1,30 @@
+version: "3.7"
+
+services:
+
+  portainer:
+    container_name: portainer
+    image: portainer/portainer
+    restart: always
+    networks:
+      - traefik-network
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+      - ${PORTAINER_DATA}:/data
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.portainer.entrypoints=web
+      - traefik.http.routers.portainer.rule=Host(`containers.${DOMAIN}`)
+      - traefik.http.routers.portainer.middlewares=basic-http
+      - traefik.http.routers.portainer-sec.entrypoints=websecure
+      - traefik.http.routers.portainer-sec.rule=Host(`containers.${DOMAIN}`)
+      - traefik.http.services.portainer-sec.loadBalancer.server.port=9000
+      - traefik.http.routers.portainer-sec.middlewares=sso,basic
+      - traefik.http.routers.portainer-sec.tls=true
+      - traefik.http.routers.portainer-sec.tls.certresolver=cfdns
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
