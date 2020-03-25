@@ -1,0 +1,34 @@
+version: "3.7"
+
+services:
+
+  gotify:
+    container_name: gotify
+    image: gotify/server:latest
+    restart: unless-stopped
+    networks:
+      - traefik-network
+    volumes:
+      - ${GOTIFY_DATA}/data:/app/data
+    environment:
+      - GOTIFY_DATABASE_DIALECT=sqlite3
+      - GOTIFY_DATABASE_CONNECTION=gotify.db
+      - GOTIFY_DEFAULTUSER_NAME=${USERNAME}
+      - GOTIFY_DEFAULTUSER_PASS=${PASSWORD}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.gotify.entrypoints=web
+      - traefik.http.routers.gotify.rule=Host(`gotify.${DOMAIN}`)
+      - traefik.http.routers.gotify.middlewares=basic-http
+      - traefik.http.routers.gotify-sec.entrypoints=websecure
+      - traefik.http.routers.gotify-sec.rule=Host(`gotify.${DOMAIN}`)
+      - traefik.http.services.gotify-sec.loadBalancer.server.port=80
+      - traefik.http.routers.gotify-sec.middlewares=basic
+      - traefik.http.routers.gotify-sec.tls=true
+      - traefik.http.routers.gotify-sec.tls.certresolver=cfdns
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
