@@ -92,6 +92,7 @@ services:
   traefik-sso-fw:
     image: thomseddon/traefik-forward-auth
     container_name: traefik-sso-fw
+    restart: always
     environment:
       - PROVIDERS_GOOGLE_CLIENT_ID=${AUTH_ID}
       - PROVIDERS_GOOGLE_CLIENT_SECRET=${AUTH_SECRET}
