@@ -10,6 +10,14 @@ All the middlewares stated above will work with little to no configuration steps
 
 To use, ensure you have created the external `docker network create traefik-network`!
 
+## TLS
+
+There are 2 options for TLS provided in this compose file: TLS Challenge and DNS Challenge. If you plan to use a mix of both for any reason, ensure that the email address that you use for both are the same.
+
+Use the certificate resolver `tlsc` to use the TLS Challenge.
+
+Use the certificate resolver `cfdns` to use the DNS Challenge. This uses Cloudflare as I find it good to use for hosting my services. If you prefer an alternative DNS provider, this compose file can be easily adapted to use others. See the træfik docs for a full list of supported DNS provides that work with the DNS Challenge.
+
 ## ENV file
 
 To run this, you must create a `.env` file in this directory. Below are the required fields:
