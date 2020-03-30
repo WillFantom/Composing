@@ -3,7 +3,7 @@ version: "3.7"
 services:
 
   plex:
-    container_name: plexms
+    container_name: plex
     restart: unless-stopped
     image: plexinc/pms-docker
     devices:
@@ -36,9 +36,7 @@ services:
     restart: unless-stopped
     image: linuxserver/tautulli
     depends_on:
-      - plexms
-    ports:
-      - 32500:8181
+      - plex
     environment:
       - PUID=${PUID}
       - PGID=${PGID}
@@ -46,19 +44,15 @@ services:
     volumes:
       - ${PLEX_DIR}/tautulli:/config
     networks:
-      - default
       - traefik-network
     labels:
       - traefik.enable=true
-      - traefik.http.routers.tautulli.entrypoints=web
-      - traefik.http.routers.tautulli-sec.entrypoints=websecure
+      - traefik.http.routers.tautulli.entrypoints=websecure
       - traefik.http.routers.tautulli.rule=Host(`stats.${DOMAIN}`)
-      - traefik.http.routers.tautulli-sec.rule=Host(`stats.${DOMAIN}`)
-      - traefik.http.services.tautulli-sec.loadbalancer.server.port=8181
-      - traefik.http.routers.tautulli.middlewares=basic-http
-      - traefik.http.routers.tautulli-sec.middlewares=basic
-      - traefik.http.routers.tautulli-sec.tls=true
-      - traefik.http.routers.tautulli-sec.tls.certresolver=cfdns
+      - traefik.http.services.tautulli.loadbalancer.server.port=8181
+      - traefik.http.routers.tautulli.middlewares=basic
+      - traefik.http.routers.tautulli.tls=true
+      - traefik.http.routers.tautulli.tls.certresolver=cfdns
 
 
 networks:

@@ -15,15 +15,12 @@ services:
       - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}
     labels:
       - traefik.enable=true
-      - traefik.http.routers.grafana.entrypoints=web
+      - traefik.http.routers.grafana.entrypoints=websecure
       - traefik.http.routers.grafana.rule=Host(`monitor.${DOMAIN}`)
-      - traefik.http.routers.grafana.middlewares=basic-http
-      - traefik.http.routers.grafana-sec.entrypoints=websecure
-      - traefik.http.routers.grafana-sec.rule=Host(`monitor.${DOMAIN}`)
-      - traefik.http.services.grafana-sec.loadBalancer.server.port=3000
-      - traefik.http.routers.grafana-sec.middlewares=basic
-      - traefik.http.routers.grafana-sec.tls=true
-      - traefik.http.routers.grafana-sec.tls.certresolver=cfdns
+      - traefik.http.services.grafana.loadBalancer.server.port=3000
+      - traefik.http.routers.grafana.middlewares=sso,basic
+      - traefik.http.routers.grafana.tls=true
+      - traefik.http.routers.grafana.tls.certresolver=cfdns
 
   prometheus:
     container_name: prometheus

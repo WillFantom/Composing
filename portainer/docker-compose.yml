@@ -13,15 +13,12 @@ services:
       - ${PORTAINER_DATA}:/data
     labels:
       - traefik.enable=true
-      - traefik.http.routers.portainer.entrypoints=web
+      - traefik.http.routers.portainer.entrypoints=websecure
       - traefik.http.routers.portainer.rule=Host(`containers.${DOMAIN}`)
-      - traefik.http.routers.portainer.middlewares=basic-http
-      - traefik.http.routers.portainer-sec.entrypoints=websecure
-      - traefik.http.routers.portainer-sec.rule=Host(`containers.${DOMAIN}`)
-      - traefik.http.services.portainer-sec.loadBalancer.server.port=9000
-      - traefik.http.routers.portainer-sec.middlewares=sso,basic
-      - traefik.http.routers.portainer-sec.tls=true
-      - traefik.http.routers.portainer-sec.tls.certresolver=cfdns
+      - traefik.http.services.portainer.loadBalancer.server.port=9000
+      - traefik.http.routers.portainer.middlewares=sso,basic
+      - traefik.http.routers.portainer.tls=true
+      - traefik.http.routers.portainer.tls.certresolver=cfdns
 
 networks:
   traefik-network:

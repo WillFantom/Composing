@@ -26,15 +26,12 @@ services:
       - ${GHOST_THEMES}:/var/lib/ghost/content/themes
     labels:
       - traefik.enable=true
-      - traefik.http.routers.ghost.entrypoints=web
+      - traefik.http.routers.ghost.entrypoints=websecure
       - traefik.http.routers.ghost.rule=Host(`blog.${DOMAIN}`)
-      - traefik.http.routers.ghost.middlewares=basic-http
-      - traefik.http.routers.ghost-sec.entrypoints=websecure
-      - traefik.http.routers.ghost-sec.rule=Host(`blog.${DOMAIN}`)
-      - traefik.http.services.ghost-sec.loadBalancer.server.port=2368
-      - traefik.http.routers.ghost-sec.middlewares=basic
-      - traefik.http.routers.ghost-sec.tls=true
-      - traefik.http.routers.ghost-sec.tls.certresolver=cfdns
+      - traefik.http.services.ghost.loadBalancer.server.port=2368
+      - traefik.http.routers.ghost.middlewares=basic
+      - traefik.http.routers.ghost.tls=true
+      - traefik.http.routers.ghost.tls.certresolver=cfdns
 
   ghost-mail:
     container_name: ghost-mail

@@ -27,15 +27,13 @@ services:
       - traefik.enable=true
       #- traefik.http.middlewares.giteaShowRepos.redirectregex.regex=^https?://git.${DOMAIN}/$$
       #- traefik.http.middlewares.giteaShowRepos.redirectregex.replacement=https://git.${DOMAIN}/explore/repos
-      - traefik.http.routers.gitea.entrypoints=web
+      - traefik.http.routers.gitea.entrypoints=websecure
       - traefik.http.routers.gitea.rule=Host(`git.${DOMAIN}`)
-      - traefik.http.routers.gitea.middlewares=basic-http
-      - traefik.http.routers.gitea-sec.entrypoints=websecure
-      - traefik.http.routers.gitea-sec.rule=Host(`git.${DOMAIN}`)
-      - traefik.http.services.gitea-sec.loadBalancer.server.port=3000
-      - traefik.http.routers.gitea-sec.middlewares=basic,giteaShowRepos
-      - traefik.http.routers.gitea-sec.tls=true
-      - traefik.http.routers.gitea-sec.tls.certresolver=cfdns
+      - traefik.http.services.gitea.loadBalancer.server.port=3000
+      - traefik.http.routers.gitea.middlewares=basic
+      #- traefik.http.routers.gitea.middlewares=basic,giteaShowRepos
+      - traefik.http.routers.gitea.tls=true
+      - traefik.http.routers.gitea.tls.certresolver=cfdns
 
 networks:
   traefik-network:
