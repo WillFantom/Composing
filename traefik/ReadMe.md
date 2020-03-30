@@ -22,6 +22,10 @@ Use the certificate resolver `cfdns` to use the DNS Challenge. This uses Cloudfl
 
 This file uses the entrypoint redirection mechanism introduced in Træfik v2.2 to force all `http` requests to be redirected as `https` at port `443`. This means that each services no longer needs 2 routers (one at each entrypoint).
 
+## File Provider
+
+The services on this repo uses Træfik's **docker provider**, however, the **file provider** is also enabled. In the `.env` file you make, you will specify a `RULES_DIR`. This is a folder where you can store `<service-name>.yml` files that will be parsed as rules. An example yml file has been provided as `service.yml`. This service uses the **sso** middleware and the **basic** middleware chain, both of which are provided by the Træfik's docker mechanism. It also uses the `cfdns` certificate resolver. Specifically, the example services proxys to a service running at the IP *192.168.1.45* on port *8080*.
+
 ## ENV file
 
 To run this, you must create a `.env` file in this directory. Below are the required fields:

@@ -1,0 +1,20 @@
+http:
+  routers:
+
+    service-rtr:
+      rule: "Host(`service.mydomain.tld`)"
+      service: my-service
+      entryPoints:
+        - websecure
+      middlewares:
+        - sso@docker
+        - basic@docker
+      tls:
+        certResolver: cfdns
+
+  services:
+    my-service:
+      loadBalancer:
+        passHostHeader: true
+        servers:
+          - url: http://192.168.1.45:8080
