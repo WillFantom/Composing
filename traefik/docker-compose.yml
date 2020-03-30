@@ -39,6 +39,9 @@ services:
       - "--providers.file.watch=true"
       - "--entrypoints.web.address=:80"
       - "--entrypoints.websecure.address=:443"
+      - "--entrypoints.web.http.redirections.entryPoint.to=websecure"
+      - "--entrypoints.web.http.redirections.entryPoint.scheme=https"
+      - "--entrypoints.web.http.redirections.entrypoint.permanent=true"
       - "--certificatesResolvers.tlsc.acme.tlschallenge=true"
       - "--certificatesresolvers.tlsc.acme.email=${CF_API_EMAIL}"
       - "--certificatesresolvers.tlsc.acme.storage=/letsencrypt/acme-tls.json"
@@ -52,9 +55,7 @@ services:
       - traefik.enable=true
 
       ## Middlewares
-      ## - these can be reused on any træfik enabled services
-      # Redirect to HTTPS
-      - traefik.http.middlewares.tls-redirect.redirectscheme.scheme=https
+
       # Basic Auth (with details from ingress/.env)
       - traefik.http.middlewares.bauth.basicauth.users=${USERNAME}:${HASHEDPASS}
       # Forward Auth
@@ -69,7 +70,6 @@ services:
       - traefik.http.middlewares.xss.headers.browserXssFilter=true
       - traefik.http.middlewares.frameDeny.headers.frameDeny=true
       - traefik.http.middlewares.nosniff.headers.contentTypeNosniff=true
-      - traefik.http.middlewares.sslr.headers.sslredirect=true
       # Internal Only (Requires Træfik to be running with network mode host)
       # - traefik.http.middlewares.inner.ipwhitelist.sourcerange=${ALLOWED_SUBNETS}
       # Rate Limit
@@ -77,14 +77,10 @@ services:
       - traefik.http.middlewares.ratelimit.ratelimit.burst=100
 
       # Middleware Chains
-      - traefik.http.middlewares.basic-http.chain.middlewares=tls-redirect,sslr
       - traefik.http.middlewares.basic.chain.middlewares=ratelimit,hsts,xss,sslr,nosniff,frameDeny
-      - traefik.http.middlewares.auth.chain.middlewares=sso,bauth
+      - traefik.http.middlewares.full-auth.chain.middlewares=sso,bauth
 
       # Træfik Dashboard Labels
-      - traefik.http.routers.traefik.entrypoints=web
-      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
-      - traefik.http.routers.traefik.middlewares=basic-http
       - traefik.http.routers.traefik-sec.entrypoints=websecure
       - traefik.http.routers.traefik-sec.rule=Host(`traefik.${DOMAIN}`)
       - traefik.http.routers.traefik-sec.service=api@internal
