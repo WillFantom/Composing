@@ -77,7 +77,7 @@ services:
       - traefik.http.middlewares.ratelimit.ratelimit.burst=100
 
       # Middleware Chains
-      - traefik.http.middlewares.basic.chain.middlewares=ratelimit,hsts,xss,sslr,nosniff,frameDeny
+      - traefik.http.middlewares.basic.chain.middlewares=ratelimit,hsts,xss,nosniff,frameDeny
       - traefik.http.middlewares.full-auth.chain.middlewares=sso,bauth
 
       # Træfik Dashboard Labels
