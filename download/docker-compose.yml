@@ -1,0 +1,110 @@
+version: "3.7"
+
+services:
+
+  transmission:
+    container_name: transmission
+    image: haugene/transmission-openvpn:latest
+    restart: unless-stopped
+    cap_add:
+      - NET_ADMIN
+    networks:
+      - traefik-network
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - ${TRANSMISSION_CNF}/cnf:/data
+      - ${COMPLETED_DOWNLOADS}:/downloads
+      - ${INCOMPLETE_DOWNLOADS}:/incomplete
+      - ${TORRENTS}:/watch
+    environment:
+      - OPENVPN_PROVIDER=${VPNPROVIDER}
+      - OPENVPN_USERNAME=${VPNEMAIL}
+      - OPENVPN_PASSWORD=${VPNPASSWORD}
+      - CREATE_TUN_DEVICE=true
+      - LOCAL_NETWORK=${LOCAL_SUBNET}
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TRANSMISSION_WEB_UI=combustion
+      - TRANSMISSION_DOWNLOAD_DIR=/downloads
+      - TRANSMISSION_INCOMPLETE_DIR=/incomplete
+      - TRANSMISSION_DOWNLOAD_QUEUE_ENABLED=true
+      - TRANSMISSION_WATCH_DIR_ENABLED=true
+      - TRANSMISSION_WATCH_DIR=/watch
+      - TRANSMISSION_DOWNLOAD_QUEUE_SIZE=5
+      - OPENVPN_OPTS=--inactive 3600 --ping 10 --ping-exit 60
+      - TRANSMISSION_RPC_PORT=9091
+      - TRANSMISSION_RPC_AUTHENTICATION_REQUIRED=true
+      - TRANSMISSION_RPC_HOST_WHITELIST_ENABLED=false
+      - TRANSMISSION_RPC_WHITELIST_ENABLED=false
+      - TRANSMISSION_RPC_PASSWORD=${TRANSMISSIONPASSWORD}
+      - TRANSMISSION_RPC_USERNAME=${TRANSMISSIONUSERNAME}
+      - TRANSMISSION_UMASK=002
+      - TRANSMISSION_RATIO_LIMIT=2
+      - TRANSMISSION_RATIO_LIMIT_ENABLED=true
+      - WEBPROXY_ENABLED=false
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.transmission.rule=Host(`transmission.${DOMAIN}`,`torrent.${DOMAIN}`)
+      - traefik.http.services.transmission.loadbalancer.server.port=9091
+      - traefik.http.routers.transmission.middlewares=sso,basic
+      - traefik.http.routers.transmission.tls=true
+      - traefik.http.routers.transmission.tls.certresolver=cfdns
+
+  sabnzbd:
+    container_name: sabnzbd
+    image: linuxserver/sabnzbd
+    restart: unless-stopped
+    networks:
+      - traefik-network
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - ${SAB_CNF}/cnf:/config
+      - ${COMPLETED_DOWNLOADS}:/downloads
+      - ${INCOMPLETE_DOWNLOADS}:/incomplete
+      - ${NZBS}:/watched
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.sabnzbd.rule=Host(`sabnzbd.${DOMAIN}`,`usenet.${DOMAIN}`)
+      - traefik.http.services.sabnzbd.loadbalancer.server.port=8080
+      - traefik.http.routers.sabnzbd.middlewares=sso,basic
+      - traefik.http.routers.sabnzbd.tls=true
+      - traefik.http.routers.sabnzbd.tls.certresolver=cfdns
+
+  hydra:
+    container_name: hydra
+    image: linuxserver/hydra2
+    restart: unless-stopped
+    networks:
+      - traefik-network
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - ${HYDRA_CNF}:/config
+      - ${NZBS}:/downloads
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+      - TZ=${TZ}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.hydra.rule=Host(`hydra.${DOMAIN}`)
+      - traefik.http.services.hydra.loadbalancer.server.port=5076
+      - traefik.http.routers.hydra.middlewares=sso,basic
+      - traefik.http.routers.hydra.tls=true
+      - traefik.http.routers.hydra.tls.certresolver=cfdns
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
