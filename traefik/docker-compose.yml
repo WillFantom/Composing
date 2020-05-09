@@ -106,6 +106,12 @@ services:
     command:
       - --rule.trapi.rule="PathPrefix(`/api`) && Host(`traefik.${DOMAIN}`)"
       - --rule.trapi.action=allow
+      - --rule.rdapi.rule="PathPrefix(`/api`) && Host(`radarr.${DOMAIN}`)"
+      - --rule.rdapi.action=allow
+      - --rule.snapi.rule="PathPrefix(`/api`) && Host(`sonarr.${DOMAIN}`)"
+      - --rule.snapi.action=allow
+      - --rule.sbapi.rule="PathPrefix(`/api`) && Host(`sabnzbd.${DOMAIN}`)"
+      - --rule.sbapi.action=allow
     labels:
       - traefik.enable=true
       - traefik.http.services.traefik-sso-fw.loadBalancer.server.port=4181
