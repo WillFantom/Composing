@@ -1,0 +1,29 @@
+version: '3.7'
+
+services:
+
+  grafana:
+    container_name: grafana
+    image: grafana/grafana:latest
+    restart: unless-stopped
+    user: root
+    networks:
+      - traefik-network
+    volumes:
+      - ${GRAFANA_DATA_DIR}:/var/lib/grafana
+    environment:
+      - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.grafana.entrypoints=websecure
+      - traefik.http.routers.grafana.rule=Host(`monitor.${DOMAIN}`)
+      - traefik.http.services.grafana.loadBalancer.server.port=3000
+      - traefik.http.routers.grafana.middlewares=sso,basic
+      - traefik.http.routers.grafana.tls=true
+      - traefik.http.routers.grafana.tls.certresolver=cfdns
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge

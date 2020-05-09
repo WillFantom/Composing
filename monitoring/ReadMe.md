@@ -1,6 +1,6 @@
 # Monitoring
 
-This monitoring stack uses the flowwoing services:
+This monitoring stack uses the following services:
 - Grafana: Used for as a front-end for monitoring data. Basically, makes pretty graphs!
 - Prometheus: A Time Series DataBase (TSDB) that scrapes services (polling) for data amd store it. It also provides an API to collect the metrics (what grafana uses).
 - Alerts-Manager: Can send alerts based on rules setup in prometheus, allowing you to receive notifications when you need them.

@@ -2,26 +2,6 @@ version: '3.7'
 
 services:
 
-  grafana:
-    container_name: grafana
-    image: grafana/grafana:latest
-    restart: unless-stopped
-    user: root
-    networks:
-      - traefik-network
-    volumes:
-      - ${GRAFANA_DATA_DIR}:/var/lib/grafana
-    environment:
-      - GF_INSTALL_PLUGINS=${GRAFANA_PLUGINS}
-    labels:
-      - traefik.enable=true
-      - traefik.http.routers.grafana.entrypoints=websecure
-      - traefik.http.routers.grafana.rule=Host(`monitor.${DOMAIN}`)
-      - traefik.http.services.grafana.loadBalancer.server.port=3000
-      - traefik.http.routers.grafana.middlewares=sso,basic
-      - traefik.http.routers.grafana.tls=true
-      - traefik.http.routers.grafana.tls.certresolver=cfdns
-
   prometheus:
     container_name: prometheus
     image: prom/prometheus:latest
@@ -39,7 +19,13 @@ services:
       - '--web.console.libraries=/usr/share/prometheus/console_libraries'
       - '--web.console.templates=/usr/share/prometheus/consoles'
     labels:
-      - traefik.enable=false
+      - traefik.enable=true
+      - traefik.http.routers.prom.entrypoints=websecure
+      - traefik.http.routers.prom.rule=Host(`prom.${DOMAIN}`)
+      - traefik.http.services.prom.loadBalancer.server.port=9090
+      - traefik.http.routers.prom.middlewares=bauth,basic
+      - traefik.http.routers.prom.tls=true
+      - traefik.http.routers.prom.tls.certresolver=cfdns
 
   node-exporter:
     container_name: node-exporter
