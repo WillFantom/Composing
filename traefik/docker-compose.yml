@@ -110,6 +110,8 @@ services:
       - --rule.rdapi.action=allow
       - --rule.snapi.rule="PathPrefix(`/api`) && Host(`sonarr.${DOMAIN}`)"
       - --rule.snapi.action=allow
+      - --rule.ldapi.rule="PathPrefix(`/api`) && Host(`lidarr.${DOMAIN}`)"
+      - --rule.ldapi.action=allow
       - --rule.sbapi.rule="PathPrefix(`/api`) && Host(`sabnzbd.${DOMAIN}`)"
       - --rule.sbapi.action=allow
     labels:
