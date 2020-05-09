@@ -103,6 +103,9 @@ services:
       - WHITELIST=${WHITELISTED_EMAILS}
     networks:
       - traefik-network
+    command:
+      - --rule.trapi.rule="PathPrefix(`/api`) && Host(`traefik.${DOMAIN}`)"
+      - --rule.trapi.action=allow
     labels:
       - traefik.enable=true
       - traefik.http.services.traefik-sso-fw.loadBalancer.server.port=4181
