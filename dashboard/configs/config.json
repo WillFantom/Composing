@@ -1,0 +1,35 @@
+{
+  "title": "App Dashboard",
+  "debug": false,
+  "appproviders": [
+    {
+      "name": "traefik",
+      "type": "traefik"
+    }
+  ],
+  "engines": {
+    "duckduckgo": {
+      "url": "https://duckduckgo.com/?q=",
+      "prefix": "d"
+    }
+  },
+  "bookmarks": {
+    "social": [
+      {
+        "name": "telegram-web",
+        "url": "https://web.telegram.org"
+      },
+      {
+        "name": "facebook",
+        "url": "https://messenger.com"
+      }
+    ],
+    "music": [
+      {
+        "name": "spotify",
+        "url": "https://listen.spotify.com"
+      }
+    ]
+  },
+  "app_refresh": 20
+}

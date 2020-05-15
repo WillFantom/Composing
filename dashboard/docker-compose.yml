@@ -1,0 +1,31 @@
+version: "3.7"
+
+services:
+  sui:
+    container_name: sui
+    image: willfantom/sui:latest
+    restart: unless-stopped
+    networks:
+      - traefik-network
+    dns:
+      - 1.1.1.1
+      - 1.0.0.1
+    volumes:
+      - ./configs:/sui
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.sui.rule=Host(`apps.${DOMAIN}`, `dash.${DOMAIN}`)
+      - traefik.http.services.sui.loadbalancer.server.port=6999
+      - traefik.http.routers.sui.middlewares=basic
+      - traefik.http.routers.sui.tls=true
+      - traefik.http.routers.sui.tls.certresolver=cfdns
+      - sui.enabled=true
+      - sui.name=dashboard
+      - sui.icon=home
+
+networks:
+  traefik-network:
+    external: true
+  default:
+    driver: bridge
