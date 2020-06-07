@@ -11,8 +11,9 @@ services:
     volumes:
       - ${GOTIFY_DATA}/data:/app/data
     environment:
+      - TZ=${TZ}
       - GOTIFY_DATABASE_DIALECT=sqlite3
-      - GOTIFY_DATABASE_CONNECTION=gotify.db
+      - GOTIFY_DATABASE_CONNECTION=data/gotify.db
       - GOTIFY_DEFAULTUSER_NAME=${USERNAME}
       - GOTIFY_DEFAULTUSER_PASS=${PASSWORD}
     labels:
