@@ -30,6 +30,9 @@ services:
       - PLEX_CLAIM=${PLEX_CLAIM}
       - PLEX_UID=${PUID}
       - PLEX_GID=${PGID}
+    labels:
+      # Don't auto update
+      - com.centurylinklabs.watchtower.enable="false"
 
   tautulli:
     container_name: tautulli

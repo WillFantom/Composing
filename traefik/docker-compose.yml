@@ -88,6 +88,9 @@ services:
       - traefik.http.routers.traefik-sec.tls=true
       - traefik.http.routers.traefik-sec.tls.certresolver=cfdns
 
+      # Don't auto update
+      - com.centurylinklabs.watchtower.enable="false"
+
   traefik-sso-fw:
     image: thomseddon/traefik-forward-auth
     container_name: traefik-sso-fw
