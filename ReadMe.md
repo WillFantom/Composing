@@ -12,6 +12,7 @@ Each service has a short description in their directory. Below is a list of all 
 
 - [X] Ingress Service (træfik) - [here](traefik/)
 - [X] Container Manager (portainer) - [here](portainer/)
+- [X] Image Auto-Updater (watchtower) - [here](watchtower/)
 - [X] Blogging Platform (ghost - works well with Ulysses Note Editor) - [here](ghost/)
 - [X] Notification Platform (gotify) - [here](gotify/)
 - [X] Time/Wage Manager (titra) - [here](titra/)
