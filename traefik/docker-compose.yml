@@ -109,13 +109,13 @@ services:
     command:
       - --rule.trapi.rule="PathPrefix(`/api`) && Host(`traefik.${DOMAIN}`)"
       - --rule.trapi.action=allow
-      - --rule.rdapi.rule="PathPrefix(`/api`) && Host(`radarr.${DOMAIN}`)"
+      - --rule.rdapi.rule="PathPrefix(`/api`) && Host(`radarr.${DOMAIN}`) && Headers(`X-Api-Key`, `${RADARR_API_KEY}`)"
       - --rule.rdapi.action=allow
-      - --rule.snapi.rule="PathPrefix(`/api`) && Host(`sonarr.${DOMAIN}`)"
+      - --rule.snapi.rule="PathPrefix(`/api`) && Host(`sonarr.${DOMAIN}`) && Headers(`X-Api-Key`, `${SONARR_API_KEY}`)"
       - --rule.snapi.action=allow
-      - --rule.ldapi.rule="PathPrefix(`/api`) && Host(`lidarr.${DOMAIN}`)"
+      - --rule.ldapi.rule="PathPrefix(`/api`) && Host(`lidarr.${DOMAIN}`) && Headers(`X-Api-Key`, `${LIDARR_API_KEY}`)"
       - --rule.ldapi.action=allow
-      - --rule.sbapi.rule="PathPrefix(`/api`) && Host(`sabnzbd.${DOMAIN}`)"
+      - --rule.sbapi.rule="PathPrefix(`/api`) && Host(`sabnzbd.${DOMAIN}`) && Headers(`X-Api-Key`, `${SAB_API_KEY}`)"
       - --rule.sbapi.action=allow
     labels:
       - traefik.enable=true
