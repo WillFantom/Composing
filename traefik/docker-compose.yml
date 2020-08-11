@@ -81,12 +81,12 @@ services:
       - traefik.http.middlewares.full-auth.chain.middlewares=sso,bauth
 
       # Træfik Dashboard Labels
-      - traefik.http.routers.traefik-sec.entrypoints=websecure
-      - traefik.http.routers.traefik-sec.rule=Host(`traefik.${DOMAIN}`)
-      - traefik.http.routers.traefik-sec.service=api@internal
-      - traefik.http.routers.traefik-sec.middlewares=auth,basic
-      - traefik.http.routers.traefik-sec.tls=true
-      - traefik.http.routers.traefik-sec.tls.certresolver=cfdns
+      - traefik.http.routers.traefik.entrypoints=websecure
+      - traefik.http.routers.traefik.rule=Host(`traefik.${DOMAIN}`)
+      - traefik.http.routers.traefik.service=api@internal
+      - traefik.http.routers.traefik.middlewares=sso,basic
+      - traefik.http.routers.traefik.tls=true
+      - traefik.http.routers.traefik.tls.certresolver=cfdns
 
       # Don't auto update
       - com.centurylinklabs.watchtower.enable="false"
