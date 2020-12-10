@@ -85,6 +85,34 @@ services:
       - sui.name=music-lidarr
       - sui-icon=music
 
+  tdarr:
+    container_name: tdarr
+    image: haveagitgat/tdarr_aio:qsv
+    restart: unless-stopped
+    privileged: true
+    devices:
+      - /dev/dri:/dev/dri
+    networks:
+      - traefik-network
+    volumes:
+      - ${TDARR_DATA}:/home/Tdarr/Documents/Tdarr
+      - ${TDARR_DB}:/var/lib/mongodb
+      - ${MEDIA_DIR}:/home/Tdarr/media
+      - ${TRANSCODE_CACHE}:/home/Tdarr/cache
+      - /etc/localtime:/etc/localtime:ro
+    environment:
+      - TZ=${TZ}
+      - PUID=${PUID}
+      - PGID=${PGID}
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.tdarr.entrypoints=websecure
+      - traefik.http.routers.tdarr.rule=Host(`transcode.${DOMAIN}`)
+      - traefik.http.services.tdarr.loadbalancer.server.port=8265
+      - traefik.http.routers.tdarr.middlewares=sso,basic
+      - traefik.http.routers.tdarr.tls=true
+      - traefik.http.routers.tdarr.tls.certresolver=cfdns
+
   ombi:
     container_name: ombi
     image: linuxserver/ombi:v4-preview

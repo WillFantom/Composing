@@ -21,7 +21,7 @@ Each service has a short description in their directory. Below is a list of all 
 - [X] TV Show Download Automator (sonarr) - [here](media/)
 - [X] Film Download Automator (radarr) - [here](media/)
 - [X] Music Download Automator (lidarr) - [here](media/)
-- [ ] Transcoder (tdarr)
+- [X] Transcoder (tdarr) - [here](media/)
 - [X] Media Server (plex... for now) - [here](plex/)
 - [X] Media Server Monitor (tautulli) - [here](plex/)
 - [ ] Media Server Manager (organizr v2)
