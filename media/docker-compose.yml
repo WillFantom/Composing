@@ -113,9 +113,9 @@ services:
       - traefik.http.routers.tdarr.tls=true
       - traefik.http.routers.tdarr.tls.certresolver=cfdns
 
-  ombi:
-    container_name: ombi
-    image: linuxserver/ombi:v4-preview
+  overseerr:
+    container_name: overseerr
+    image: sctx/overseerr
     restart: unless-stopped
     networks:
       - default
@@ -124,26 +124,18 @@ services:
       - TZ=${TZ}
       - PUID=${PUID}
       - PGID=${PGID}
+      - LOG_LEVEL=info
     volumes:
-      - ${OMBI_CNF}:/config
+      - ${OVERSEERR_CNF}:/app/config
     labels:
       - traefik.enable=true
-      - traefik.http.routers.ombi.rule=Host(`ombi.${DOMAIN}`,`request.${DOMAIN}`,`requests.${DOMAIN}`)
-      - traefik.http.services.ombi.loadbalancer.server.port=3579
-      - traefik.http.routers.ombi.middlewares=basic
-      - traefik.http.routers.ombi.tls=true
-      - traefik.http.routers.ombi.tls.certresolver=cfdns
+      - traefik.http.routers.overseerr.rule=Host(`request.${DOMAIN}`,`requests.${DOMAIN}`)
+      - traefik.http.services.overseerr.loadbalancer.server.port=5055
+      - traefik.http.routers.overseerr.middlewares=basic
+      - traefik.http.routers.overseerr.tls=true
+      - traefik.http.routers.overseerr.tls.certresolver=cfdns
       - sui.enbaled=true
       - sui.name=media requests
-
-  ombi-mail:
-    container_name: ombi-mail
-    image: bytemark/smtp
-    restart: unless-stopped
-    networks:
-      - default
-    labels:
-      - sui.enabled=false
 
 networks:
   traefik-network:
