@@ -137,6 +137,23 @@ services:
       - sui.enbaled=true
       - sui.name=media requests
 
+  requestrr:
+    container_name: requestrr
+    image: darkalfx/requestrr:latest
+    restart: unless-stopped
+    networks:
+      - default
+      - traefik-network
+    volumes:
+      - ${REQUESTRR_CNF}:/root/config
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.requestrr.rule=Host(`requestrr.${DOMAIN}`)
+      - traefik.http.services.requestrr.loadbalancer.server.port=4545
+      - traefik.http.routers.requestrr.middlewares=basic
+      - traefik.http.routers.requestrr.tls=true
+      - traefik.http.routers.requestrr.tls.certresolver=cfdns
+
 networks:
   traefik-network:
     external: true

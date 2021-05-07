@@ -6,6 +6,7 @@ This compose file provides several media download automators:
 - Radarr: A service for automating Movie downloads
 - Lidarr: A service for automating Music downloads
 - Overeerr: A frontend to add content to the above services (can be used by N users)
+- Requestrr: A Discord bot for making media requests via Overseerr
 - Tdarr (Intel QSV variant): A services for automating the transcoding process
 
 For media request notifications (mobile), I suggest the app LunaSea.
@@ -24,6 +25,7 @@ To run this, you must create a `.env` file in this directory. Below are the requ
 - RADARR_CNF - The dir where you will store your radarr config and db
 - LIDARR_CNF - The dir where you will store your lidarr config and db
 - OVERSEERR_CNF - The dir where you will store your overseerr config
+- REQUESTRR_CNF - The dir where you will store your requestrr config
 - TDARR_DATA - The directory where Tdarr will store any application data
 - TDARR_DB - The directory where Tdarr will store its database
 - TRANSCODE_CACHE - The directory where any temp files for transcoding will be stored. To increase the lifespan of your disks/ssds, I suggest this directory being on a RAM Disk
